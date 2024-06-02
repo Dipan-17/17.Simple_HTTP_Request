@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import org.json.JSONObject
 import java.io.BufferedReader
+import java.io.DataOutputStream
 import java.io.IOException
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
@@ -18,10 +19,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        CallAPILoginAsyncTask().execute()
+        CallAPILoginAsyncTask("Dipan","1234").execute()
     }
 
-    private inner class CallAPILoginAsyncTask():AsyncTask<Any,Void,String>(){
+    private inner class CallAPILoginAsyncTask(val userName:String, val password:String):AsyncTask<Any,Void,String>(){
 
         private lateinit var customProgressDialog: Dialog
 
@@ -46,6 +47,38 @@ class MainActivity : AppCompatActivity() {
                 //send data
                 connection.doOutput = true
 
+                //refer earlier commit -> we were only reading the data from net
+
+                //from here code starts to POST request
+
+                //set properties for the connection
+                connection.instanceFollowRedirects=false
+                connection.requestMethod="POST"
+                connection.setRequestProperty("Content-Type","application/json")//check mock website for details
+                connection.setRequestProperty("charset","utf-8")
+                connection.setRequestProperty("Accept","application/json")
+                connection.useCaches=false
+
+                //start writing the data
+                val writeDataOutputStream= DataOutputStream(connection.outputStream)
+
+                val jsonRequest=JSONObject()
+                jsonRequest.put("userName",userName)
+                jsonRequest.put("password",password)
+
+                writeDataOutputStream.writeBytes(jsonRequest.toString())
+                writeDataOutputStream.flush()
+                writeDataOutputStream.close()
+
+
+
+
+
+
+
+
+
+                //post request code ends -> following is the code for reading the data from net
                 val httpResult: Int = connection.responseCode
 
                 //if result is ok
