@@ -5,6 +5,7 @@ import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import com.google.gson.Gson
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.DataOutputStream
@@ -139,6 +140,29 @@ class MainActivity : AppCompatActivity() {
 
             Log.i("JSON Response", result.toString())
 
+            val responseData=Gson().fromJson(result,ResponseData::class.java)
+            //individual items
+            Log.i("Message",responseData.message)
+            Log.i("Name",responseData.name)
+            Log.i("Time",responseData.time)
+
+            //object inside object
+            Log.i("Date",responseData.x.date.toString())
+            Log.i("Month",responseData.x.month)
+
+            //Array of objects
+            for(item in responseData.items.indices){
+                Log.i("Item",responseData.items[item].id.toString()+" "+responseData.items[item].name)
+            }
+
+
+
+
+
+
+            /*
+
+            //manually parsing the objects
 
             //parse the JSON response
             val jsonObject=JSONObject(result)
@@ -171,6 +195,9 @@ class MainActivity : AppCompatActivity() {
                     Log.i("Data_List_Item: ",dataItemObject.optInt("id").toString()+" "+dataItemObject.optString("name"))
                 }
             }
+
+
+            */
 
         }
 
