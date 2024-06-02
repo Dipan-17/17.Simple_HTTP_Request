@@ -5,6 +5,7 @@ import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -38,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
             //if connection ok
             try {
-                val url = URL("https://run.mocky.io/v3/e202c0e7-9f2b-4f35-a058-b9b295f0446e")
+                val url = URL("https://run.mocky.io/v3/8a222c94-ddac-45ba-8dfb-f746cbb750b6")
                 connection = url.openConnection() as HttpURLConnection
                 //get data
                 connection.doInput = true
@@ -104,6 +105,40 @@ class MainActivity : AppCompatActivity() {
             cancelProgressDialog()
 
             Log.i("JSON Response", result.toString())
+
+
+            //parse the JSON response
+            val jsonObject=JSONObject(result)
+
+            //only strings from json
+            val msg=jsonObject.optString("message")
+            Log.i("message",msg)
+            val name=jsonObject.optString("name")
+            Log.i("name",name)
+
+
+            //json inside json
+            val x=jsonObject.optJSONObject("x")
+            val dateX=x.optString("date")
+            val monthX=x.optString("month")
+            Log.i("dateX",dateX)
+            Log.i("monthX",monthX)
+
+            //list of json objects inside json
+            val itemListArray=jsonObject.optJSONArray("items")
+            if (itemListArray != null) {
+                Log.i("Size",itemListArray.length().toString())
+            }
+            //go through the list
+            if (itemListArray != null) {
+                for(item in 0 until itemListArray.length()){
+                    Log.i("Value_at $item",itemListArray[item].toString())
+
+                    var dataItemObject:JSONObject=itemListArray.getJSONObject(item)
+                    Log.i("Data_List_Item: ",dataItemObject.optInt("id").toString()+" "+dataItemObject.optString("name"))
+                }
+            }
+
         }
 
 
